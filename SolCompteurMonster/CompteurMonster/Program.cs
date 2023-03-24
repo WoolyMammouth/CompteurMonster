@@ -3,48 +3,60 @@ using System.Runtime.ConstrainedExecution;
 
 while (true)
 {
-
-    Console.WriteLine("Veuillez selectionnez le nom: \nE) Édouard \nC) Constance");
-    string personne = Console.ReadLine();
-    try
+    Console.Clear();
+    Console.WriteLine("Veuillez selectionnez l'option: " +
+        "\nA) Ajouter des canettes " +
+        "\nS) Soustraire" +
+        "\nT) Test pas rapport\n");
+    string choix = Console.ReadLine();
+    switch (choix.ToUpper())
     {
-        switch (personne.ToUpper())
-        {
-            case "E":
-                nbreMonster("E");
-                break;
-            case "C":
-                nbreMonster("C");
-                break;
-            default:
-                Console.WriteLine("no");
-                Console.Clear();
-                break;
-        }
-
+        case "A":
+            afficherMenu("plus");
+            break;
+        case "S":
+            afficherMenu("moins");
+            break;
+        case "T":
+            testPasRapport();
+            break;
+        default:
+            break;
     }
-    catch (Exception)
-    {
-        Console.WriteLine("Une erreur s'est produite...");
-        break;
-    }
-
+    afficherStats();
+    Console.ReadKey();
 
 }
-void nbreMonster(string nom)
+
+void afficherMenu(string operateur)
 {
-    Console.WriteLine("Veuillez entrez le nombre de canettes de boisson énergisante bues aujourd'hui");
+    Console.WriteLine("Veuillez selectionnez le nom: \nE) Édouard \nC) Constance");
+    string personne = Console.ReadLine();
 
-    int total = Convert.ToInt32(Console.ReadLine());
-    int nb = 0;
-    string nomFichier = "monster.txt";
-
-    using (StreamReader sr = new StreamReader(nomFichier))
+    switch (personne.ToUpper())
     {
-
+        case "E":
+            nbreMonster("E", operateur);
+            break;
+        case "C":
+            nbreMonster("C", operateur);
+            break;
+        default:
+            Console.WriteLine("no");
+            Console.Clear();
+            break;
     }
+}
 
+void testPasRapport()
+{
+    Console.WriteLine("Test Pas Rapport");
+    return;
+}
 
+void nbreMonster(string nom, string operateur)
+{
+    string nomFichier = " ";
     switch (nom)
     {
         case "E":
@@ -57,19 +69,78 @@ void nbreMonster(string nom)
             break;
     }
 
-    using (StreamWriter sw = new StreamWriter(nomFichier))
+    Console.WriteLine("Veuillez entrez le nombre de canettes bues aujourd'hui");
+
+    int nbUser = Convert.ToInt32(Console.ReadLine());
+
+
+    //Console.WriteLine(nbUser);
+    //int total = 0;
+
+    //using (StreamReader sr = new StreamReader(nomFichier))
+    //{
+    //    total = Convert.ToInt32(sr.ReadLine()) + nbUser;
+    //}
+    switch (operateur)
     {
-        sw.WriteLine(total + nb);
+        case "plus":
+            using (StreamWriter sw = new StreamWriter(nomFichier, true))
+            {
+                sw.WriteLine(nbUser);
+            }
+            break;
+
+        case "moins":
+            using (StreamWriter sw = new StreamWriter(nomFichier, true))
+            {
+                sw.WriteLine("-"+nbUser);
+            }
+            break;
+        default:
+            break;
     }
 
+    Console.Clear();
 
 }
 
-void afficherMenu(string n, string option1, string option2)
+
+static int CalcStatsDansFichier(string nom)
 {
+    int sum = 0;
+    using (StreamReader sr = new StreamReader(nom))
+    {
+        string line;
+        while ((line = sr.ReadLine()) != null)
+        {
+            int value;
+            if (int.TryParse(line, out value))
+            {
+                sum += value;
+            }
+        }
+    }
+    return sum;
+}
 
-    Console.WriteLine($"Menu {n}");
-    Console.WriteLine($"1) {option1}");
-    Console.WriteLine($"2) {option2}");
+void afficherStats()
+{
+    int totalC;
+    int totalE;
 
+    totalC = CalcStatsDansFichier("C.txt");
+    totalE = CalcStatsDansFichier("E.txt");
+    //using (StreamReader sr = new StreamReader("C.txt"))
+    //{
+    //    totalC = Convert.ToInt32(sr.ReadToEnd());
+    //}
+    //using (StreamReader sr = new StreamReader("E.txt"))
+    //{
+    //    totalE = Convert.ToInt32(sr.ReadToEnd());
+    //}
+
+    Console.WriteLine($"Stats");
+    Console.WriteLine($"Édouard:        {totalE}");
+    Console.WriteLine($"Constance:      {totalC}");
+    Console.WriteLine("Appuyez sur une touche pour continuer");
 }
